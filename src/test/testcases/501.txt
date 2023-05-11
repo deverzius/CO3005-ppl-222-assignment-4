@@ -1,7 +1,0 @@
-
-        y: integer = 10;
-        main: function void() {
-            // printBoolean(true);
-            printString("abc");
-        }
-        
