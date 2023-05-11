@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "D:/ppl/assignment3/src/main/mt22/utils",
+        "D:/ppl/assignment4/src/main/mt22/codegen"
+    ]
+}
+
