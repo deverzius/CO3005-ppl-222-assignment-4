@@ -100,6 +100,10 @@ class Emitter():
         # frame: Frame
         # ..., arrayref, index, value -> ...
 
+        # ME: GlobalVar
+        # if frame is None:
+        #     return self.jvm.emitALOAD(0)
+        
         frame.pop()
         if type(in_) is IntegerType:
             return self.jvm.emitIALOAD()
@@ -124,6 +128,12 @@ class Emitter():
             return self.jvm.emitAASTORE()
         else:
             raise IllegalOperandException(str(in_))
+    
+    # ME
+    def emitNEWARRAY(self, typ, frame):
+        
+        frame.push()
+        return self.jvm.emitNEWARRAY(self.getJVMType(typ))
 
     '''    generate the var directive for a local variable.
     *   @param in the index of the local variable.
@@ -237,7 +247,7 @@ class Emitter():
         # frame: Frame
 
         # BY ME
-        # frame.pop()
+        frame.pop()
         return self.jvm.emitPUTSTATIC(lexeme, self.getJVMType(in_))
 
     def emitGETFIELD(self, lexeme, in_, frame):
@@ -252,8 +262,8 @@ class Emitter():
         # in_: Type
         # frame: Frame
 
-        #frame.pop()
-        #frame.pop()
+        frame.pop()
+        frame.pop()
         return self.jvm.emitPUTFIELD(lexeme, self.getJVMType(in_))
 
     ''' generate code to invoke a static method
@@ -334,8 +344,8 @@ class Emitter():
         result = list()
         result.append(self.emitIFTRUE(label1, frame))
         result.append(self.emitPUSHCONST("true", in_, frame))
-        result.append(self.emitGOTO(label2, frame))
-        result.append(self.emitLABEL(label1, frame))
+        result.append(self.emitGOTO(str(label2), frame))
+        result.append(self.emitLABEL(str(label1), frame))
         result.append(self.emitPUSHCONST("false", in_, frame))
         result.append(self.emitLABEL(label2, frame))
         return ''.join(result)
