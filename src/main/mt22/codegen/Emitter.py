@@ -608,11 +608,16 @@ class Emitter():
         # in_: Type
         # frame: Frame
 
-        if type(in_) is IntegerType:
-            frame.pop()
-            return self.jvm.emitIRETURN()
-        elif type(in_) is VoidType:
+        if type(in_) is VoidType:
             return self.jvm.emitRETURN()
+        
+        frame.pop()
+        if type(in_) is IntegerType or type(in_) is BooleanType:
+            return self.jvm.emitIRETURN()
+        if type(in_) is FloatType:
+            return self.jvm.emitFRETURN()
+        if type(in_) is StringType:
+            return self.jvm.emitARETURN()
 
     ''' generate code that represents a label	
     *   @param label the label

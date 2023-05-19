@@ -90,15 +90,48 @@ class CheckCodeGenSuite(unittest.TestCase):
 # """
 #         self.assertTrue(TestCodeGen.test(input, expect, 502))
 
-    def test_5(self):
+    # def test_5(self):
+    #         input = """
+    #         foo: function integer() {
+    #             return 1;
+    #         }
+            
+    #         main: function void() {
+    #             for (i = 0, i < 5, i + 1) {
+    #                 printInteger(i);
+    #             }
+    #         }
+    #         """
+    #         expect = """1\n"""
+    #         self.assertTrue(TestCodeGen.test(input, expect, 502))
+    
+    # def test_6(self):
+    #         input = """
+    #         foo: function integer() {
+    #             return 1;
+    #         }
+            
+    #         main: function void() {
+    #             i: integer = 5;
+                
+    #             do {
+    #                 printInteger(i);
+    #                 i = i - 1;
+    #             } while (i >= 6);
+    #         }
+    #         """
+    #         expect = """5\n"""
+    #         self.assertTrue(TestCodeGen.test(input, expect, 502))
+        
+        def test_7(self):
             input = """
-            foo: function integer() {
-                return 100 % 5;
+            foo: function string() {
+                return "abc";
             }
             
             main: function void() {
-                i: integer = foo();
+                printString(foo());
             }
             """
-            expect = """12\n"""
+            expect = """abc\n"""
             self.assertTrue(TestCodeGen.test(input, expect, 502))
