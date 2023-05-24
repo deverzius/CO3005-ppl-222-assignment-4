@@ -123,15 +123,96 @@ class CheckCodeGenSuite(unittest.TestCase):
     #         expect = """5\n"""
     #         self.assertTrue(TestCodeGen.test(input, expect, 502))
         
-        def test_7(self):
-            input = """
-            foo: function string() {
-                return "abc";
-            }
+    # def test_7(self):
+    #     input = """
+    #     foo: function string() {
+    #         return "abc";
+    #     }
+        
+    #     main: function void() {
+    #         printString(foo() :: "buhbuh");
+    #     }
+    #     """
+    #     expect = """abcbuhbuh\n"""
+    #     self.assertTrue(TestCodeGen.test(input, expect, 502))
+    
+    # def test_7(self):
+    #     input = """
+    #     foo: function string() {
+    #         return "abc";
+    #     }
+        
+    #     arr: array[3] of integer = {1,2,3};
+    #     main: function void() {
+    #         printInteger(arr[0]);
+    #     }
+    #     """
+    #     expect = """1\n"""
+    #     self.assertTrue(TestCodeGen.test(input, expect, 502))
+    
+    # def test_8(self):
+    #     input = """
+    #     foo: function string() {
+    #         return "abc";
+    #     }
+        
+    #     main: function void() {
+    #         i: integer = 10;
             
-            main: function void() {
-                printString(foo());
-            }
-            """
-            expect = """abc\n"""
-            self.assertTrue(TestCodeGen.test(input, expect, 502))
+    #         do {
+    #             i = i - 1;
+    #             if (i > 5) {
+    #                 continue;
+    #             }
+    #             printInteger(i);
+    #         } while (i > 0);
+    #     }
+    #     """
+    #     expect = """1\n"""
+    #     self.assertTrue(TestCodeGen.test(input, expect, 502))
+    
+    # def test_9(self):
+    #     input = """
+    #     //foo: function string() {
+    #     //    return "abc";
+    #     //}
+        
+    #     main: function void() {
+    #         x: array[3] of integer = {1,2,3};
+    #         x[0] = 12;
+    #         printInteger(x[0]);
+    #     }
+    #     """
+    #     expect = """12\n"""
+    #     self.assertTrue(TestCodeGen.test(input, expect, 502))
+    # def test_10(self):
+    #     input = """
+    #     //foo: function string() {
+    #     //    return "abc";
+    #     //}
+        
+    #     main: function void() {
+    #         x: array[3] of string = {"a","b","c"};
+    #         x[0] = "hiii";
+    #         printString(x[0]);
+    #     }
+    #     """
+    #     expect = """hiii\n"""
+    #     self.assertTrue(TestCodeGen.test(input, expect, 502))
+    def test_10(self):
+        input = """
+        //foo: function string() {
+        //    return "abc";
+        //}
+        
+        x: array[3] of integer = {1,2,3};
+        main: function void() {
+            x[0] = 10;
+            s: string = "ldc";
+            ff: float = 2.1e4;
+            printInteger(x[0]);
+            printFloat(ff);
+        }
+        """
+        expect = """10\n21000.0\n"""
+        self.assertTrue(TestCodeGen.test(input, expect, 502))

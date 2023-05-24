@@ -31,11 +31,18 @@ class Emitter():
             return "(" + "".join(list(map(lambda x: self.getJVMType(x), inType.partype))) + ")" + self.getJVMType(inType.rettype)
         elif typeIn is cgen.ClassType:
             return "L" + inType.name + ";"
+        else:
+            #ME
+            return inType
 
-    def getFullType(inType):
+    def getFullType(self, inType):
         typeIn = type(inType)
         if typeIn is IntegerType:
             return "int"
+        elif typeIn is FloatType:
+            return "float"
+        elif typeIn is BooleanType:
+            return "boolean"
         elif typeIn is StringType:
             return "java/lang/String"
         elif typeIn is VoidType:
@@ -85,8 +92,10 @@ class Emitter():
         # typ: Type
         # frame: Frame
 
-        if type(typ) is IntegerType:
+        if type(typ) in [IntegerType, BooleanType]:
             return self.emitPUSHICONST(in_, frame)
+        elif type(typ) is FloatType:
+            return self.emitPUSHFCONST(in_, frame)
         elif type(typ) is StringType:
             frame.push()
             return self.jvm.emitLDC(in_)
@@ -100,14 +109,14 @@ class Emitter():
         # frame: Frame
         # ..., arrayref, index, value -> ...
 
-        # ME: GlobalVar
-        # if frame is None:
-        #     return self.jvm.emitALOAD(0)
+        if frame is None:
+            return self.jvm.emitALOAD(0)
         
         frame.pop()
-        if type(in_) is IntegerType:
+        if type(in_) in [IntegerType, BooleanType]:
             return self.jvm.emitIALOAD()
-        # elif type(in_) is cgen.ArrayPointerType or type(in_) is cgen.ClassType or type(in_) is StringType:
+        elif type(in_) is FloatType:
+            return self.jvm.emitFALOAD()
         elif type(in_) is cgen.ClassType or type(in_) is StringType:
             return self.jvm.emitAALOAD()
         else:
@@ -123,6 +132,8 @@ class Emitter():
         frame.pop()
         if type(in_) is IntegerType:
             return self.jvm.emitIASTORE()
+        elif type(in_) is FloatType:
+            return self.jvm.emitFASTORE()
         # elif type(in_) is cgen.ArrayPointerType or type(in_) is cgen.ClassType or type(in_) is StringType:
         elif type(in_) is cgen.ClassType or type(in_) is StringType:
             return self.jvm.emitAASTORE()
@@ -131,9 +142,9 @@ class Emitter():
     
     # ME
     def emitNEWARRAY(self, typ, frame):
-        
-        frame.push()
-        return self.jvm.emitNEWARRAY(self.getJVMType(typ))
+        if type(typ) is StringType:
+            return self.jvm.emitANEWARRAY(self.getFullType(typ))
+        return self.jvm.emitNEWARRAY(self.getFullType(typ))
 
     '''    generate the var directive for a local variable.
     *   @param in the index of the local variable.
@@ -163,8 +174,12 @@ class Emitter():
         frame.push()
         if type(inType) in [IntegerType, BooleanType]:
             return self.jvm.emitILOAD(index)
+        elif type(inType) is FloatType:
+            return self.jvm.emitFLOAD(index)
         # elif type(inType) is cgen.ArrayPointerType or type(inType) is cgen.ClassType or type(inType) is StringType:
         elif type(inType) is cgen.ClassType or type(inType) is StringType:
+            return self.jvm.emitALOAD(index)
+        elif type(inType) is ArrayType:
             return self.jvm.emitALOAD(index)
         else:
             raise IllegalOperandException(name)
@@ -198,10 +213,11 @@ class Emitter():
 
         if type(inType) is IntegerType:
             return self.jvm.emitISTORE(index)
-        if type(inType) is BooleanType:
+        elif type(inType) is BooleanType:
             return self.jvm.emitISTORE(index)
-        # elif type(inType) is cgen.ArrayPointerType or type(inType) is cgen.ClassType or type(inType) is StringType:
-        elif type(inType) is cgen.ClassType or type(inType) is StringType:
+        elif type(inType) is FloatType:
+            return self.jvm.emitFSTORE(index)
+        elif type(inType) is cgen.ClassType or type(inType) is StringType or type(inType) is ArrayType:
             return self.jvm.emitASTORE(index)
         else:
             raise IllegalOperandException(name)
