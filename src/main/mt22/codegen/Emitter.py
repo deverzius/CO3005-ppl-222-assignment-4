@@ -113,8 +113,10 @@ class Emitter():
             return self.jvm.emitALOAD(0)
         
         frame.pop()
-        if type(in_) in [IntegerType, BooleanType]:
+        if type(in_) is IntegerType:
             return self.jvm.emitIALOAD()
+        elif type(in_) is BooleanType:
+            return self.jvm.emitBALOAD()
         elif type(in_) is FloatType:
             return self.jvm.emitFALOAD()
         elif type(in_) is cgen.ClassType or type(in_) is StringType:
@@ -126,12 +128,14 @@ class Emitter():
         # in_: Type
         # frame: Frame
         # ..., arrayref, index, value -> ...
-
+        
         frame.pop()
         frame.pop()
         frame.pop()
         if type(in_) is IntegerType:
             return self.jvm.emitIASTORE()
+        elif type(in_) is BooleanType:
+            return self.jvm.emitBASTORE()
         elif type(in_) is FloatType:
             return self.jvm.emitFASTORE()
         # elif type(in_) is cgen.ArrayPointerType or type(in_) is cgen.ClassType or type(in_) is StringType:
@@ -142,6 +146,7 @@ class Emitter():
     
     # ME
     def emitNEWARRAY(self, typ, frame):
+        frame.push()
         if type(typ) is StringType:
             return self.jvm.emitANEWARRAY(self.getFullType(typ))
         return self.jvm.emitNEWARRAY(self.getFullType(typ))
@@ -202,14 +207,15 @@ class Emitter():
     *   @param name the symbol entry of the variable.
     '''
 
-    def emitWRITEVAR(self, name, inType, index, frame):
+    def emitWRITEVAR(self, name, inType, index, frame, canPop = True):
         # name: String
         # inType: Type
         # index: Int
         # frame: Frame
         # ..., value -> ...
 
-        frame.pop()
+        # if canPop == True:
+        #     frame.pop()
 
         if type(inType) is IntegerType:
             return self.jvm.emitISTORE(index)
